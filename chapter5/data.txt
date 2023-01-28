@@ -1,0 +1,4 @@
+*** start ***
+Hello!
+this is test message.
+*** end ***
