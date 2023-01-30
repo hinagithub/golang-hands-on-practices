@@ -53,7 +53,15 @@ func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 
 // hello handler
 func hello(w http.ResponseWriter, req *http.Request, tmp *template.Template) {
-	er := tmp.Execute(w, nil)
+
+	item := struct {
+		Title string
+		Items []string
+	}{
+		Title: "Send values",
+		Items: []string{"One", "Two", "Three"},
+	}
+	er := tmp.Execute(w, item)
 	if er != nil {
 		log.Fatal(er)
 	}
@@ -66,6 +74,7 @@ func main() {
 		index(w, req, temps.indx)
 	})
 
+	// hello handling
 	http.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
 		hello(w, req, temps.helo)
 	})
