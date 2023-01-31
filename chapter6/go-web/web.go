@@ -4,87 +4,74 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+
+	"github.com/gorilla/sessions"
 )
 
-// Temps is template structs.
-type Temps struct {
-	notemp *template.Template
-	indx   *template.Template
-	helo   *template.Template
-}
+// session variable. (not used)
+var cs *sessions.CookieStore = sessions.NewCookieStore([]byte("secret-key-1234"))
 
 // Template for no-template.
 func notemp() *template.Template {
-	src := "<html><body>NO TEMPALTES.</body></html>"
+	src := "<html><body><h1>NO TEMPLATE.</h1></body></html>"
 	tmp, _ := template.New("index").Parse(src)
 	return tmp
 }
 
-// setup template function.
-func setupTemp() *Temps {
-	temps := new(Temps)
-	temps.notemp = notemp()
-
-	// set index template.
-	indx, er := template.ParseFiles("templates/index.html")
-	if er != nil {
-		indx = temps.notemp
-	}
-
-	temps.indx = indx
-
-	// set hello template.
-	helo, er := template.ParseFiles("templates/hello.html")
-	if er != nil {
-		helo = temps.notemp
-	}
-	temps.helo = helo
-
-	return temps
+// get target Temlate.
+func page(fname string) *template.Template {
+	tmps, _ := template.ParseFiles("templates/"+fname+".html",
+		"templates/head.html", "templates/foot.html")
+	return tmps
 }
 
-// index handler
-func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
-	er := tmp.Execute(w, nil)
+// index handler.
+func index(w http.ResponseWriter, rq *http.Request) {
+	item := struct {
+		Template string
+		Title    string
+		Message  string
+	}{
+		Template: "index",
+		Title:    "Index",
+		Message:  "This is Top page.",
+	}
+	er := page("index").Execute(w, item)
 	if er != nil {
 		log.Fatal(er)
 	}
 }
 
-// hello handler
-func hello(w http.ResponseWriter, req *http.Request, tmp *template.Template) {
-
-	msg := "type name and pass."
-
-	if req.Method == "POST" {
-		nm := req.PostFormValue("name")
-		pw := req.PostFormValue("pass")
-		msg = "name: " + nm + " password: " + pw
+// hello handler.
+func hello(w http.ResponseWriter, rq *http.Request) {
+	data := []string{
+		"One", "Two", "Three",
 	}
 
 	item := struct {
-		Title   string
-		Message string
+		Title string
+		Data  []string
 	}{
-		Title:   "Send values",
-		Message: msg,
+		Title: "Hello",
+		Data:  data,
 	}
-	er := tmp.Execute(w, item)
+
+	er := page("hello").Execute(w, item)
 	if er != nil {
 		log.Fatal(er)
 	}
 }
 
+// main program.
 func main() {
-	temps := setupTemp()
-	// index handling
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		index(w, req, temps.indx)
+	// index handling.
+	http.HandleFunc("/", func(w http.ResponseWriter, rq *http.Request) {
+		index(w, rq)
+	})
+	// hello handling
+	http.HandleFunc("/hello", func(w http.ResponseWriter, rq *http.Request) {
+		hello(w, rq)
 	})
 
-	// hello handling
-	http.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
-		hello(w, req, temps.helo)
-	})
 	http.ListenAndServe("", nil)
 }
