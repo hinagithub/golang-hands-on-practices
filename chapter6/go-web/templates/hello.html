@@ -6,10 +6,17 @@
     </head>
     <body class="container">
         <h1 class="display-4 md-4">{{ .Title }}</h1>
-        {{ with .Message }}
-        <p>OK, message is here!</p>
-        {{ else }}
-        <p>no message...</p>
-        {{ end }}
+        <p>{{ .Message }}</p>
+        <form action="/hello" method="post">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id ="name" name="name">
+            </div>
+            <div class="form-group">
+                <label for="pass">Password</label>
+                <input type="password" class="form-control" id ="pass" name="pass">
+            </div>
+            <button type="submit" class="btn btn-primary">Click</button>
+        </form>
     </body>
 </html>
