@@ -55,11 +55,11 @@ func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 func hello(w http.ResponseWriter, req *http.Request, tmp *template.Template) {
 
 	item := struct {
-		Title string
-		Items []string
+		Title   string
+		Message string
 	}{
-		Title: "Send values",
-		Items: []string{"One", "Two", "Three"},
+		Title:   "Send values",
+		Message: "YES! this is message!",
 	}
 	er := tmp.Execute(w, item)
 	if er != nil {
