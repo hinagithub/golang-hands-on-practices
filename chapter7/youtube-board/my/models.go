@@ -1,7 +1,10 @@
 package my
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
+// User model.
 type User struct {
 	gorm.Model
 	Account  string
@@ -19,6 +22,7 @@ type Post struct {
 	GroupId int
 }
 
+// Group model.
 type Group struct {
 	gorm.Model
 	UserId  int

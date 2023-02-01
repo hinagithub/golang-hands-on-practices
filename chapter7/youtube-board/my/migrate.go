@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 // Migrate program.
@@ -14,5 +15,7 @@ func Migrate() {
 		return
 	}
 	defer db.Close()
+
 	db.AutoMigrate(&User{}, &Group{}, &Post{}, &Comment{})
+
 }
